@@ -4,16 +4,11 @@ from datetime import datetime
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome_usuario = db.Column(db.String(80), unique=True, nullable=False)
+    # email = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=True) 
     senha = db.Column(db.String(200), nullable=False)
     e_instituicao = db.Column(db.Boolean, default=False)
 
-# class Doacao(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     item_comida = db.Column(db.String(200), nullable=False)
-#     quantidade = db.Column(db.Integer, nullable=False)
-#     doador_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
-#     instituicao_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=True)
-#     criado_em = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Instituicao(db.Model):
     id = db.Column(db.Integer, primary_key=True)

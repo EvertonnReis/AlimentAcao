@@ -2,10 +2,14 @@ from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
 from .modelos import Usuario, db
+from flask_cors import cross_origin
 
 auth_bp = Blueprint('autenticacao', __name__)
 
 @auth_bp.route('/registro', methods=['POST'])
+@cross_origin(origins="*", supports_credentials=True, 
+              allow_headers=['Content-Type', 'Authorization'], 
+              methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
 def registro():
     dados = request.get_json()
     nome_usuario = dados.get('nome_usuario')
@@ -19,6 +23,9 @@ def registro():
     return jsonify({"mensagem": "Usuário criado com sucesso"}), 201
 
 @auth_bp.route('/login', methods=['POST'])
+@cross_origin(origins="*", supports_credentials=True, 
+              allow_headers=['Content-Type', 'Authorization'], 
+              methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
 def login():
     dados = request.get_json()
     usuario = Usuario.query.filter_by(nome_usuario=dados.get('nome_usuario')).first()

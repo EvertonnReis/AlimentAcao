@@ -3,3 +3,4 @@ Flask-JWT-Extended
 Flask-SQLAlchemy
 PyMySQL
 python-dotenv
+Flask-Cors
