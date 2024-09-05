@@ -13,10 +13,11 @@ auth_bp = Blueprint('autenticacao', __name__)
 def registro():
     dados = request.get_json()
     nome_usuario = dados.get('nome_usuario')
+    email = dados.get('email')
     senha = generate_password_hash(dados.get('senha'))
     e_instituicao = dados.get('e_instituicao', False)
 
-    usuario = Usuario(nome_usuario=nome_usuario, senha=senha, e_instituicao=e_instituicao)
+    usuario = Usuario(nome_usuario=nome_usuario, email=email, senha=senha, e_instituicao=e_instituicao)
     db.session.add(usuario)
     db.session.commit()
 
@@ -28,7 +29,8 @@ def registro():
               methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
 def login():
     dados = request.get_json()
-    usuario = Usuario.query.filter_by(nome_usuario=dados.get('nome_usuario')).first()
+    email = dados.get('email')
+    usuario = Usuario.query.filter_by(email=email).first()
 
     if usuario and check_password_hash(usuario.senha, dados.get('senha')):
         access_token = create_access_token(identity=usuario.id)
