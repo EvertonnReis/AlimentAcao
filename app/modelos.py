@@ -4,10 +4,10 @@ from datetime import datetime
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome_usuario = db.Column(db.String(80), unique=True, nullable=False)
-    # email = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=True) 
     senha = db.Column(db.String(200), nullable=False)
     e_instituicao = db.Column(db.Boolean, default=False)
+    # tipo = db.Column(db.)
 
 
 class Instituicao(db.Model):

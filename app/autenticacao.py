@@ -5,6 +5,7 @@ from .modelos import Usuario, db
 from flask_cors import cross_origin
 
 auth_bp = Blueprint('autenticacao', __name__)
+instituicao_bp = Blueprint('instituicao', __name__)
 
 @auth_bp.route('/registro', methods=['POST'])
 @cross_origin(origins="*", supports_credentials=True, 
