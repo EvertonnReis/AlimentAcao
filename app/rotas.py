@@ -18,8 +18,9 @@ def criar_instituicao():
     nome = dados.get('nome')
     endereco = dados.get('endereco')
     telefone = dados.get('telefone')
+    id_usuario = dados.get('id_usuario')
 
-    nova_instituicao = Instituicao(nome=nome, endereco=endereco, telefone=telefone)
+    nova_instituicao = Instituicao(nome=nome, endereco=endereco, telefone=telefone,id_usuario=id_usuario)
     db.session.add(nova_instituicao)
     db.session.commit()
 

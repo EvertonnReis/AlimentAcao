@@ -17,8 +17,17 @@ def registro():
     email = dados.get('email')
     senha = generate_password_hash(dados.get('senha'))
     e_instituicao = dados.get('e_instituicao', False)
+    cpf_cnpj = dados.get('cpf_cnpj')  
+    telefone = dados.get('telefone') 
 
-    usuario = Usuario(nome_usuario=nome_usuario, email=email, senha=senha, e_instituicao=e_instituicao)
+    usuario = Usuario(
+        nome_usuario=nome_usuario,
+        email=email,
+        senha=senha,
+        e_instituicao=e_instituicao,
+        cpf_cnpj=cpf_cnpj,
+        telefone=telefone
+    )
     db.session.add(usuario)
     db.session.commit()
 
@@ -35,6 +44,6 @@ def login():
 
     if usuario and check_password_hash(usuario.senha, dados.get('senha')):
         access_token = create_access_token(identity=usuario.id)
-        return jsonify(access_token=access_token), 200
+        return jsonify(access_token=access_token,id=usuario.id,username=usuario.nome_usuario), 200
 
     return jsonify({"mensagem": "Credenciais inválidas"}), 401
