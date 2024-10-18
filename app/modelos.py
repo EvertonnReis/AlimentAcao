@@ -21,6 +21,7 @@ class Instituicao(db.Model):
     nome = db.Column(db.String(100), nullable=False)
     endereco = db.Column(db.String(200), nullable=False)
     telefone = db.Column(db.String(20), nullable=False)
+    cnpj = db.Column(db.String(20), unique=True, nullable=True)
     id_usuario = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
     
     usuario = db.relationship('Usuario', backref=db.backref('instituicoes', lazy=True))
