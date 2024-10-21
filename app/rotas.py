@@ -21,6 +21,7 @@ def criar_instituicao():
     nome = dados.get('nome')
     endereco = dados.get('endereco')
     telefone = dados.get('telefone')
+    cnpj = dados.get('cnpj')
     id_usuario = dados.get('id_usuario')
 
     nova_instituicao = Instituicao(nome=nome, endereco=endereco, telefone=telefone,id_usuario=id_usuario)
@@ -37,7 +38,8 @@ def listar_instituicoes():
         'id': inst.id,
         'nome': inst.nome,
         'endereco': inst.endereco,
-        'telefone': inst.telefone
+        'telefone': inst.telefone,
+        'cnpj': inst.cnpj
     } for inst in instituicoes]), 200
 
 # Atualizar instituição
@@ -49,6 +51,7 @@ def atualizar_instituicao(id):
     instituicao.nome = dados.get('nome', instituicao.nome)
     instituicao.endereco = dados.get('endereco', instituicao.endereco)
     instituicao.telefone = dados.get('telefone', instituicao.telefone)
+    instituicao.cnpj = dados.get('cnpj', instituicao.cnpj)
 
     db.session.commit()
     return jsonify({"mensagem": "Instituição atualizada com sucesso"}), 200
