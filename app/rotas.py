@@ -1,6 +1,7 @@
+from datetime import datetime
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from .modelos import Doacao, Usuario, db, Instituicao
+from .modelos import Doacao, Usuario, db, Instituicao, Alimento , doacao_alimento
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
 from flask_cors import CORS
@@ -8,8 +9,10 @@ from flask_cors import CORS
 # Criando o blueprint para Instituição e Autenticação
 instituicao_bp = Blueprint('instituicao', __name__)
 auth_bp = Blueprint('autenticacao', __name__)
+doacao_bp = Blueprint('doacao', __name__)
 
 CORS(instituicao_bp, resources={r"/instituicoes/*": {"origins": "*"}})
+CORS(doacao_bp, resources={r"/doacoes/*": {"origins": "*"}})
 
 # Criar instituição
 @instituicao_bp.route('/instituicoes', methods=['POST'])
@@ -84,3 +87,93 @@ def login():
         return jsonify(access_token=access_token), 200
 
     return jsonify({"mensagem": "Credenciais inválidas"}), 401
+
+# Criar doação
+@doacao_bp.route('/doacoes', methods=['POST'])
+def criar_doacao():
+    data = request.json
+    instituicao = Instituicao.query.get(data['id_instituicao'])
+    if not instituicao:
+        return jsonify({'error': 'Instituição não encontrada'}), 400
+
+    # Criar a doação
+    nova_doacao = Doacao(
+        id_doador=int(data['id_doador']),
+        id_instituicao=int(data['id_instituicao']),
+        data=datetime.now()
+    )
+    db.session.add(nova_doacao)
+    db.session.commit()
+
+    # Agora, inserir os alimentos associados
+    for alimento in data['alimentos']:
+        # Verifique se as chaves necessárias estão presentes
+        if 'validade' not in alimento or 'quantidade' not in alimento:
+            return jsonify({'error': 'Dados do alimento inválidos'}), 400
+
+        # Convertendo a quantidade para inteiro
+        try:
+            quantidade = int(alimento['quantidade'])
+        except ValueError:
+            return jsonify({'error': 'Quantidade deve ser um número inteiro válido'}), 400
+
+        # Criar um novo alimento sem verificar se já existe
+        novo_alimento = Alimento(
+            nome=alimento['nome'],
+            validade=alimento['validade'],
+            quantidade=quantidade
+        )
+        db.session.add(novo_alimento)
+        db.session.commit()  # Commit para gerar o ID do alimento
+        alimento_id = novo_alimento.id
+
+        # Usar o método `execute` da sessão para criar o relacionamento
+        db.session.execute(
+            doacao_alimento.insert().values(
+                doacao_id=nova_doacao.id,
+                alimento_id=alimento_id,
+                quantidade=quantidade,
+                validade=alimento['validade']
+            )
+        )
+
+    db.session.commit()  # Commit para salvar os alimentos associados
+    return jsonify({'id': nova_doacao.id}), 201
+
+
+# Listar todas as doações
+@doacao_bp.route('/doacoes', methods=['GET'])
+def listar_doacoes():
+    doacoes = Doacao.query.all()
+    return jsonify([{
+        'id': doacao.id,
+        'id_doador': doacao.id_doador,
+        'doador': doacao.doador.nome_usuario,
+        'id_instituicao': doacao.id_instituicao,
+        'instituicao': doacao.instituicao.nome,
+        'data': doacao.data.isoformat(),
+        'alimentos': [{'nome': alimento.nome, 'quantidade': alimento.quantidade, 'validade': alimento.validade.isoformat()} for alimento in doacao.alimentos]
+    } for doacao in doacoes])
+
+
+# Atualizar doação
+@doacao_bp.route('/doacoes/<int:id>', methods=['PUT'])
+def atualizar_doacao(id):
+    doacao = Doacao.query.get_or_404(id)
+    dados = request.get_json()
+    
+    doacao.doador = dados.get('doador', doacao.doador)
+    doacao.beneficiario = dados.get('beneficiario', doacao.beneficiario)
+    doacao.alimentos = dados.get('alimentos', doacao.alimentos)
+    doacao.date = dados.get('date', doacao.date)
+
+    db.session.commit()
+    return jsonify({"mensagem": "Doação atualizada com sucesso"}), 200
+
+# Deletar doação
+@doacao_bp.route('/doacoes/<int:id>', methods=['DELETE'])
+def deletar_doacao(id):
+    doacao = Doacao.query.get_or_404(id)
+    db.session.delete(doacao)
+    db.session.commit()
+    return jsonify({"mensagem": "Doação deletada com sucesso"}), 200
