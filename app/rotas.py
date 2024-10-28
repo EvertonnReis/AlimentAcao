@@ -24,7 +24,7 @@ def criar_instituicao():
     cnpj = dados.get('cnpj')
     id_usuario = dados.get('id_usuario')
 
-    nova_instituicao = Instituicao(nome=nome, endereco=endereco, telefone=telefone,id_usuario=id_usuario)
+    nova_instituicao = Instituicao(nome=nome, endereco=endereco, telefone=telefone,id_usuario=id_usuario,cnpj=cnpj)
     db.session.add(nova_instituicao)
     db.session.commit()
 

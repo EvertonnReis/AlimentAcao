@@ -8,8 +8,8 @@ class Usuario(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=True)
     senha = db.Column(db.String(200), nullable=False)
     e_instituicao = db.Column(db.Boolean, default=False)
-    cpf_cnpj = db.Column(db.String(20), unique=True, nullable=True)
-    telefone = db.Column(db.String(15), nullable=True)  
+    cpf_cnpj = db.Column(db.String(14), unique=True, nullable=True)
+    telefone = db.Column(db.String(11), nullable=True)  
 
     def __repr__(self):
         return f'<Usuario {self.nome_usuario}>'
@@ -20,8 +20,8 @@ class Instituicao(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
     endereco = db.Column(db.String(200), nullable=False)
-    telefone = db.Column(db.String(20), nullable=False)
-    cnpj = db.Column(db.String(20), unique=True, nullable=True)
+    telefone = db.Column(db.String(11), nullable=False)
+    cnpj = db.Column(db.String(14), unique=True, nullable=True)
     id_usuario = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
     
     usuario = db.relationship('Usuario', backref=db.backref('instituicoes', lazy=True))
