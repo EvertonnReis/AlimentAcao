@@ -47,3 +47,12 @@ def login():
         return jsonify(access_token=access_token,id=usuario.id,username=usuario.nome_usuario), 200
 
     return jsonify({"mensagem": "Credenciais inválidas"}), 401
+
+# Pegar usuário pelo id
+@auth_bp.route('/usuarios/<int:id>', methods=['GET'])
+def pegar_usuario(id):
+    usuario = Usuario.query.get_or_404(id)
+    return jsonify({
+        "id": usuario.id,
+        "nome": usuario.nome_usuario
+}), 200
