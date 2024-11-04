@@ -11,12 +11,11 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 db = SQLAlchemy()
 
 from .autenticacao import auth_bp
-from .rotas import instituicao_bp
+from .rotas import instituicao_bp, doacao_bp
 
 def criar_app():
     app = Flask(__name__)
 
-    # Configuração global do CORS
     CORS(app, 
          resources={r"/*": {"origins": "*"}}, 
          supports_credentials=True, 
@@ -29,6 +28,7 @@ def criar_app():
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(instituicao_bp)
+    app.register_blueprint(doacao_bp)
 
     with app.app_context():
         from . import rotas
