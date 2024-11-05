@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
-from .modelos import Usuario, db
+from .modelos import Instituicao, Usuario, db
 from flask_cors import cross_origin
 
 auth_bp = Blueprint('autenticacao', __name__)
@@ -44,8 +44,17 @@ def login():
 
     if usuario and check_password_hash(usuario.senha, dados.get('senha')):
         access_token = create_access_token(identity=usuario.id)
-        return jsonify(access_token=access_token,id=usuario.id,username=usuario.nome_usuario), 200
 
+        instituicao = Instituicao.query.filter_by(id_usuario=usuario.id).first()
+        id_instituicao = instituicao.id if instituicao else None
+
+        return jsonify(
+            access_token=access_token,
+            id=usuario.id,
+            username=usuario.nome_usuario,
+            instituicao=id_instituicao
+        ), 200
+    
     return jsonify({"mensagem": "Credenciais inválidas"}), 401
 
 # Pegar usuário pelo id

@@ -206,6 +206,27 @@ def listar_doacoes_usuario(id):
         'alimentos': [{'nome': alimento.nome, 'quantidade': alimento.quantidade, 'validade': alimento.validade.isoformat(), 'unidade': alimento.unidade} for alimento in doacao.alimentos]
     } for doacao in doacoes])
 
+# Listar todas as doações do usuario desejado
+@doacao_bp.route('/doacoesInstituicoes/<int:id_instituicao>', methods=['GET'])
+def listar_doacoes_instituicoes(id_instituicao):
+    doacoes = Doacao.query.filter_by(id_instituicao=id_instituicao).all()
+    return jsonify([{
+        'id': doacao.id,
+        'id_doador': doacao.id_doador,
+        'doador': doacao.doador.nome_usuario,
+        'id_instituicao': doacao.id_instituicao,
+        'instituicao': doacao.instituicao.nome,
+        'data': doacao.data.isoformat(),
+        'alimentos': [
+            {
+                'nome': alimento.nome,
+                'quantidade': alimento.quantidade,
+                'validade': alimento.validade.isoformat(),
+                'unidade': alimento.unidade
+            } for alimento in doacao.alimentos
+        ]
+    } for doacao in doacoes])
+
 @doacao_bp.route('/doacoes/<int:id>/alimentos', methods=['GET'])
 def listar_alimentos_doacao(id):
     doacao = Doacao.query.get(id)
