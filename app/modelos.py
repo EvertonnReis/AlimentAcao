@@ -56,7 +56,8 @@ class Doacao(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     id_doador = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)  # Referência correta a Usuario
     id_instituicao = db.Column(db.Integer, db.ForeignKey('instituicao.id'), nullable=False)
-    data = db.Column(db.DateTime, default=datetime.utcnow)
+    data = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    recebido = db.Column(db.Boolean, default=False)
 
     # Relacionamentos
     instituicao = db.relationship('Instituicao', backref=db.backref('doacoes', lazy=True))

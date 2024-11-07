@@ -63,5 +63,35 @@ def pegar_usuario(id):
     usuario = Usuario.query.get_or_404(id)
     return jsonify({
         "id": usuario.id,
-        "nome": usuario.nome_usuario
+        "nome_usuario": usuario.nome_usuario,
+        "cpf_cnpj": usuario.cpf_cnpj,
+        "email": usuario.email,
+        "telefone": usuario.telefone,
 }), 200
+
+@auth_bp.route('/usuarios/<int:id>', methods=['PUT'])
+@cross_origin(origins="*", supports_credentials=True, 
+              allow_headers=['Content-Type', 'Authorization'], 
+              methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
+def atualizar_usuario(id):
+    usuario = Usuario.query.get_or_404(id)
+    dados = request.get_json()
+
+    # Atualizando os campos do usuário
+    usuario.nome_usuario = dados.get('nome_usuario', usuario.nome_usuario)
+    usuario.email = dados.get('email', usuario.email)
+    usuario.cpf_cnpj = dados.get('cpf_cnpj', usuario.cpf_cnpj)
+    usuario.telefone = dados.get('telefone', usuario.telefone)
+
+    # Se a senha for fornecida, ela será atualizada
+    senha = dados.get('senha')
+    if senha:
+        usuario.senha = generate_password_hash(senha)
+
+    try:
+        # Commitando as alterações no banco de dados
+        db.session.commit()
+        return jsonify({"mensagem": "Usuário atualizado com sucesso"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"mensagem": "Erro ao atualizar usuário", "erro": str(e)}), 500
